@@ -7,6 +7,7 @@ from app.models.user import User
 from passlib.hash import bcrypt
 from fastapi_jwt_auth import AuthJWT
 from app.routers.dependencies import require_current_valid_token
+import uuid
 
 router = APIRouter()
 
@@ -24,7 +25,6 @@ def register_user_with_password(user: UserCreate, db: Session = Depends(get_db))
 
     hashed_password = bcrypt.hash(user.password)
     new_user = User(
-        username=user.username,
         email=user.email,
         hashed_password=hashed_password
     )
@@ -48,7 +48,7 @@ def login_user(user: UserCreate, db: Session = Depends(get_db), Authorize: AuthJ
 
     jti = str(uuid.uuid4())
     # 生成 access token
-    access_token = Authorize.create_access_token(subject=db_user.email, jti=jti)
+    access_token = Authorize.create_access_token(subject=db_user.email, )
     db_user.current_jti = jti
     db.commit()
     return {"access_token": access_token} 

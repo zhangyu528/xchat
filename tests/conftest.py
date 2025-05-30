@@ -10,13 +10,9 @@ from sqlalchemy.orm import sessionmaker
 from app.database import Base, get_db
 from app.main import app
 from fastapi.testclient import TestClient
-import os
 
-from dotenv import load_dotenv
-# 加载测试数据库配置
-load_dotenv(".env.test")
 # 读取测试数据库连接字符串（用于测试数据库环境）
-TEST_DATABASE_URL = os.getenv("DATABASE_URL")
+TEST_DATABASE_URL = "postgresql+psycopg://postgres:secret@localhost:5432/test_db"
 
 # 创建测试数据库引擎，确保不会对正式数据库造成影响
 # 通常使用 SQLite 或测试专用 PostgreSQL 实例
@@ -58,3 +54,18 @@ def apply_override(override_get_db):
 @pytest.fixture()
 def client():
     return TestClient(app)
+
+
+
+
+from fastapi_jwt_auth import AuthJWT
+from pydantic import BaseModel
+
+class TestSettings(BaseModel):
+    authjwt_secret_key: str = "test_secret"
+
+@AuthJWT.load_config
+def get_test_config():
+    return TestSettings()
+
+# 其他测试 fixture ...
