@@ -48,7 +48,7 @@ def login_user(user: UserCreate, db: Session = Depends(get_db), Authorize: AuthJ
 
     jti = str(uuid.uuid4())
     # 生成 access token
-    access_token = Authorize.create_access_token(subject=db_user.email, )
+    access_token = Authorize.create_access_token(subject=db_user.email, user_claims={"jti": jti})
     db_user.current_jti = jti
     db.commit()
     return {"access_token": access_token} 
