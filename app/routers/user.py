@@ -6,6 +6,7 @@ from app.database import get_db  # 同步 get_db
 from app.models.user import User
 from passlib.hash import bcrypt
 from fastapi_jwt_auth import AuthJWT
+from app.routers.dependencies import require_current_valid_token
 
 router = APIRouter()
 
@@ -45,8 +46,11 @@ def login_user(user: UserCreate, db: Session = Depends(get_db), Authorize: AuthJ
     if not db_user or not bcrypt.verify(user.password, db_user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-     # 生成 access token
-    access_token = Authorize.create_access_token(subject=db_user.email)
+    jti = str(uuid.uuid4())
+    # 生成 access token
+    access_token = Authorize.create_access_token(subject=db_user.email, jti=jti)
+    db_user.current_jti = jti
+    db.commit()
     return {"access_token": access_token} 
 
 
@@ -57,10 +61,7 @@ def login_user(user: UserCreate, db: Session = Depends(get_db), Authorize: AuthJ
                         description="Get current user", 
                         response_description="Current user",
                         responses={401: {"description": "Invalid token"}, 404: {"description": "User not found"}})
-def get_current_user(Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
-    Authorize.jwt_required()
+def get_current_user(Authorize: AuthJWT = Depends(), db: Session = Depends(get_db), _ = Depends(require_current_valid_token)):
     email = Authorize.get_jwt_subject()
     user = db.execute(select(User).where(User.email == email)).scalar_one_or_none()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
     return user

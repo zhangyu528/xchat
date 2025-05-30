@@ -8,3 +8,5 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
+
+    current_jti = Column(String(36), nullable=True, comment="当前有效JWT的jti")
