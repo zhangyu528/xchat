@@ -16,7 +16,8 @@ dependencies = [
     "pydantic[email] (>=1.10.13,<2.0.0)",
     "python-dotenv (>=1.1.0,<2.0.0)",
     "psycopg[binary] (>=3.2.9,<4.0.0)",
-    "fastapi-jwt-auth (>=0.5.0,<0.6.0)"
+    "fastapi-jwt-auth (>=0.5.0,<0.6.0)",
+    "python-socketio (>=5.13.0,<6.0.0)",
 ]
 
 
@@ -28,5 +29,7 @@ build-backend = "poetry.core.masonry.api"
 uvicorn = "^0.34.2"
 alembic = "^1.15.2"
 pytest = "^8.3.5"
+pytest-asyncio = "^1.0.0"
+aiohttp = "^3.12.7"
 httpx = "^0.28.1"
 

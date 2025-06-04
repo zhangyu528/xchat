@@ -64,8 +64,12 @@ from pydantic import BaseModel
 class TestSettings(BaseModel):
     authjwt_secret_key: str = "test_secret"
 
+# 覆盖测试环境的配置
 @AuthJWT.load_config
 def get_test_config():
     return TestSettings()
 
 # 其他测试 fixture ...
+
+
+
