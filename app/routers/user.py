@@ -26,7 +26,8 @@ def register_user_with_password(user: UserCreate, db: Session = Depends(get_db))
     hashed_password = bcrypt.hash(user.password)
     new_user = User(
         email=user.email,
-        hashed_password=hashed_password
+        hashed_password=hashed_password,
+        username=user.email,
     )
     db.add(new_user)
     db.commit()

@@ -8,6 +8,7 @@ class UserCreate(BaseModel):
 class UserOut(BaseModel):
     id: int
     email: EmailStr
+    username: str
 
     class Config:
         orm_mode = True

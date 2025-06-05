@@ -10,6 +10,8 @@ from sqlalchemy.orm import sessionmaker
 from app.database import Base, get_db
 from app.main import app
 from fastapi.testclient import TestClient
+from app.models.user import User
+from sqlalchemy.orm import Session
 
 # 读取测试数据库连接字符串（用于测试数据库环境）
 TEST_DATABASE_URL = "postgresql+psycopg://postgres:secret@localhost:5432/test_db"
@@ -56,6 +58,27 @@ def client():
     return TestClient(app)
 
 
+@pytest.fixture
+def db_session():
+    db: Session = TestingSessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@pytest.fixture
+def system_user(db_session):
+    user = User(
+        id=0,
+        email="system@localhost",
+        username="system_bot",
+        is_system_user=True,
+        hashed_password="password"
+    )
+    db_session.add(user)
+    db_session.commit()
+    db_session.refresh(user)
+    return user
 
 
 from fastapi_jwt_auth import AuthJWT
